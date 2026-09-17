@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" role="img" aria-label="">
+  <defs>
+    <linearGradient id="bg" x1="0.1" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#9c958a"/>
+      <stop offset="0.55" stop-color="#6f6960"/>
+      <stop offset="1" stop-color="#3f3b35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.68" cy="0.28" r="0.55">
+      <stop offset="0" stop-color="#cdc5b7" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#cdc5b7" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="weave" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="#f4f2ed" stroke-width="0.7" opacity="0.07"/>
+      <line x1="0" y1="0" x2="14" y2="0" stroke="#1b1a18" stroke-width="0.7" opacity="0.05"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <rect width="1600" height="1000" fill="url(#glow)"/>
+  <rect width="1600" height="1000" fill="url(#weave)"/>
+  <g opacity="0.16" stroke="#f4f2ed" fill="none" stroke-width="1">
+    <path d="M1080 0 C1120 220, 1010 330, 1060 520 C1100 680, 1020 830, 1060 1000"/>
+    <path d="M1180 0 C1230 240, 1120 360, 1170 560 C1210 720, 1130 860, 1170 1000"/>
+    <path d="M1280 0 C1330 200, 1230 340, 1280 540 C1320 700, 1240 850, 1280 1000"/>
+  </g>
+</svg>

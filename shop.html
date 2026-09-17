@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>商品一覧｜WANKO VINTAGE</title>
+<meta name="description" content="WANKO VINTAGE の取扱商品一覧。アウター、ニット、トップス、ボトムス、ワンピース、小物。すべて一点物です。">
+<meta property="og:title" content="商品一覧｜WANKO VINTAGE">
+<meta property="og:description" content="WANKO VINTAGE の取扱商品一覧。アウター、ニット、トップス、ボトムス、ワンピース、小物。すべて一点物です。">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Jost:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%231b1a18'/><text x='16' y='22' font-size='16' font-family='serif' fill='%23f4f2ed' text-anchor='middle'>W</text></svg>">
+</head>
+<body>
+
+<header class="header is-static">
+  <div class="header__inner">
+    <a class="brand" href="index.html">WANKO<small>Vintage Clothing</small></a>
+    <nav class="nav" aria-label="メインメニュー">
+      <a href="shop.html" aria-current="page">Shop</a>
+      <a href="index.html#concept">Concept</a>
+      <a href="about.html">About</a>
+      <a href="guide.html">Guide</a>
+    </nav>
+    <div class="header__actions">
+      <a class="fav-btn" href="shop.html?fav=1">Favorites<span class="count" data-fav-count style="display:none">0</span></a>
+      <button class="burger" type="button" aria-label="メニュー" aria-expanded="false" aria-controls="drawer">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="drawer" id="drawer" aria-label="メニュー">
+  <a href="shop.html">Shop<small>商品一覧</small></a>
+  <a href="index.html#concept">Concept<small>私たちについて</small></a>
+  <a href="about.html">About<small>店舗案内</small></a>
+  <a href="guide.html">Guide<small>ご利用ガイド</small></a>
+  <a href="shop.html?fav=1">Favorites<small>お気に入り</small></a>
+</nav>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <p class="breadcrumb"><a href="index.html">Home</a><span>/</span>Shop</p>
+      <h1 class="h-display">Shop</h1>
+      <p class="lead" style="margin-top:18px">
+        すべて一点物です。同じ状態のものは二つとありません。実寸と状態をご確認のうえ、ゆっくりお選びください。
+      </p>
+    </div>
+  </section>
+
+  <section class="section--tight" style="padding-top:0">
+    <div class="wrap">
+      <div class="filters">
+        <div class="filter-group" id="cat-chips"></div>
+        <div class="filters__right">
+          <button type="button" class="chip" id="in-stock">在庫あり</button>
+          <button type="button" class="chip" id="fav-only">お気に入り</button>
+          <select class="select" id="sort" aria-label="並び替え">
+            <option value="new">新着順</option>
+            <option value="price-asc">価格が低い順</option>
+            <option value="price-desc">価格が高い順</option>
+            <option value="era">年代が古い順</option>
+          </select>
+          <span class="result-count" id="result-count"></span>
+        </div>
+      </div>
+
+      <div class="grid" id="grid"></div>
+      <p class="empty" id="empty" hidden>該当する商品はありません。条件を変えてお試しください。</p>
+    </div>
+  </section>
+
+  <section class="section section--warm">
+    <div class="wrap wrap--narrow center">
+      <p class="eyebrow">Newsletter</p>
+      <h2 class="h-section">入荷のお知らせを、週に一度だけ。</h2>
+      <form class="subscribe" data-subscribe style="justify-content:center">
+        <input type="email" name="email" placeholder="mail@example.com" required aria-label="メールアドレス">
+        <button class="btn" type="submit">登録する</button>
+      </form>
+      <p class="form-note">配信は週1回、解除はいつでも可能です。</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <div>
+        <a class="brand" href="index.html">WANKO<small>Vintage Clothing</small></a>
+        <p style="margin-top:20px;font-size:13px;max-width:22em">
+          選び抜いた一着を、静かに長く。<br>ヨーロッパ・アメリカ買い付けの古着店です。
+        </p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="shop.html">すべての商品</a></li>
+          <li><a href="shop.html?cat=outer">アウター</a></li>
+          <li><a href="shop.html?cat=knit">ニット</a></li>
+          <li><a href="shop.html?cat=accessory">小物</a></li>
+          <li><a href="shop.html?fav=1">お気に入り</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">お店について</a></li>
+          <li><a href="guide.html">ご利用ガイド</a></li>
+          <li><a href="guide.html#faq">よくあるご質問</a></li>
+          <li><a href="guide.html#law">特定商取引法に基づく表記</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a data-shop-mercari href="#" target="_blank" rel="noopener noreferrer">メルカリショップ</a></li>
+          <li><a data-shop-instagram href="#" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+          <li><a data-shop-email="text" href="#">contact@example.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year>2026</span> WANKO Vintage. All rights reserved.</span>
+      <span>Tokyo, Japan</span>
+    </div>
+  </div>
+</footer>
+<script src="assets/js/products.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/shop.js"></script>
+</body>
+</html>
