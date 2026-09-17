@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>商品詳細｜WANKO VINTAGE</title>
+<meta name="description" content="WANKO VINTAGE の商品詳細ページ。実寸・素材・コンディションを記載しています。">
+<meta property="og:title" content="商品詳細｜WANKO VINTAGE">
+<meta property="og:description" content="WANKO VINTAGE の商品詳細ページ。実寸・素材・コンディションを記載しています。">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Jost:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%231b1a18'/><text x='16' y='22' font-size='16' font-family='serif' fill='%23f4f2ed' text-anchor='middle'>W</text></svg>">
+</head>
+<body>
+
+<header class="header is-static">
+  <div class="header__inner">
+    <a class="brand" href="index.html">WANKO<small>Vintage Clothing</small></a>
+    <nav class="nav" aria-label="メインメニュー">
+      <a href="shop.html" aria-current="page">Shop</a>
+      <a href="index.html#concept">Concept</a>
+      <a href="about.html">About</a>
+      <a href="guide.html">Guide</a>
+    </nav>
+    <div class="header__actions">
+      <a class="fav-btn" href="shop.html?fav=1">Favorites<span class="count" data-fav-count style="display:none">0</span></a>
+      <button class="burger" type="button" aria-label="メニュー" aria-expanded="false" aria-controls="drawer">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="drawer" id="drawer" aria-label="メニュー">
+  <a href="shop.html">Shop<small>商品一覧</small></a>
+  <a href="index.html#concept">Concept<small>私たちについて</small></a>
+  <a href="about.html">About<small>店舗案内</small></a>
+  <a href="guide.html">Guide<small>ご利用ガイド</small></a>
+  <a href="shop.html?fav=1">Favorites<small>お気に入り</small></a>
+</nav>
+
+<main>
+  <section class="page-head" style="padding-bottom:24px">
+    <div class="wrap">
+      <p class="breadcrumb" id="crumb"><a href="index.html">Home</a><span>/</span><a href="shop.html">Shop</a></p>
+    </div>
+  </section>
+
+  <section class="section--tight" style="padding-top:0">
+    <div class="wrap" id="item-root"></div>
+  </section>
+
+  <section class="section section--warm" id="related-section">
+    <div class="wrap">
+      <div class="section__head">
+        <div>
+          <p class="eyebrow">You may also like</p>
+          <h2 class="h-section">似た空気の一着</h2>
+        </div>
+        <a class="link-more" href="shop.html">すべての商品 →</a>
+      </div>
+      <div class="grid" id="related"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <div>
+        <a class="brand" href="index.html">WANKO<small>Vintage Clothing</small></a>
+        <p style="margin-top:20px;font-size:13px;max-width:22em">
+          選び抜いた一着を、静かに長く。<br>ヨーロッパ・アメリカ買い付けの古着店です。
+        </p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="shop.html">すべての商品</a></li>
+          <li><a href="shop.html?cat=outer">アウター</a></li>
+          <li><a href="shop.html?cat=knit">ニット</a></li>
+          <li><a href="shop.html?cat=accessory">小物</a></li>
+          <li><a href="shop.html?fav=1">お気に入り</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">お店について</a></li>
+          <li><a href="guide.html">ご利用ガイド</a></li>
+          <li><a href="guide.html#faq">よくあるご質問</a></li>
+          <li><a href="guide.html#law">特定商取引法に基づく表記</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a data-shop-mercari href="#" target="_blank" rel="noopener noreferrer">メルカリショップ</a></li>
+          <li><a data-shop-instagram href="#" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+          <li><a data-shop-email="text" href="#">contact@example.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year>2026</span> WANKO Vintage. All rights reserved.</span>
+      <span>Tokyo, Japan</span>
+    </div>
+  </div>
+</footer>
+<script src="assets/js/products.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/item.js"></script>
+</body>
+</html>

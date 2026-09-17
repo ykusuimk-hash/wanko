@@ -1,1 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WANKO VINTAGE｜選び抜いた一着を、静かに長く。</title>
+<meta name="description" content="ヨーロッパとアメリカから届いた古着を、一点ずつ。派手さではなく、長く着られる静かな服を選んでいます。WANKO VINTAGE のオンラインストア。">
+<meta property="og:title" content="WANKO VINTAGE｜選び抜いた一着を、静かに長く。">
+<meta property="og:description" content="ヨーロッパとアメリカから届いた古着を、一点ずつ。長く着られる静かな服を選んでいます。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/img/hero.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Jost:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%231b1a18'/><text x='16' y='22' font-size='16' font-family='serif' fill='%23f4f2ed' text-anchor='middle'>W</text></svg>">
+</head>
+<body>
 
+<header class="header is-over">
+  <div class="header__inner">
+    <a class="brand" href="index.html">WANKO<small>Vintage Clothing</small></a>
+    <nav class="nav" aria-label="メインメニュー">
+      <a href="shop.html">Shop</a>
+      <a href="index.html#concept">Concept</a>
+      <a href="about.html">About</a>
+      <a href="guide.html">Guide</a>
+    </nav>
+    <div class="header__actions">
+      <a class="fav-btn" href="shop.html?fav=1">Favorites<span class="count" data-fav-count style="display:none">0</span></a>
+      <button class="burger" type="button" aria-label="メニュー" aria-expanded="false" aria-controls="drawer">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="drawer" id="drawer" aria-label="メニュー">
+  <a href="shop.html">Shop<small>商品一覧</small></a>
+  <a href="index.html#concept">Concept<small>私たちについて</small></a>
+  <a href="about.html">About<small>店舗案内</small></a>
+  <a href="guide.html">Guide<small>ご利用ガイド</small></a>
+  <a href="shop.html?fav=1">Favorites<small>お気に入り</small></a>
+</nav>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero__bg">
+      <img src="assets/img/hero.svg" alt="" width="1600" height="1000" fetchpriority="high">
+    </div>
+    <div class="hero__inner wrap">
+      <p class="eyebrow" style="color:rgba(244,242,237,.7)">European &amp; American Vintage</p>
+      <h1 class="h-display">誰かが長く着た服には、<br>静かな品がある。</h1>
+      <p class="hero__lead">
+        ヨーロッパとアメリカで探した古着を、一点ずつ。流行の中心ではなく、
+        十年後も同じ顔で着られる服だけを選んでいます。
+      </p>
+      <a class="btn" href="shop.html">商品を見る</a>
+      <div class="hero__meta">
+        <span>All items are one of a kind</span>
+        <span>1930s — 1990s</span>
+        <span>Shipping from Tokyo</span>
+      </div>
+    </div>
+    <div class="scroll-hint">Scroll</div>
+  </section>
+
+  <!-- ============ CONCEPT ============ -->
+  <section class="section" id="concept">
+    <div class="wrap concept">
+      <figure class="concept__figure reveal" style="margin:0">
+        <img src="assets/img/concept.svg" alt="アトリエで検品する様子" width="800" height="1000" loading="lazy">
+        <figcaption>Our Atelier — Tokyo</figcaption>
+      </figure>
+      <div class="concept__body reveal" data-delay="1">
+        <p class="eyebrow">Concept</p>
+        <h2 class="h-section">華やかさより、<br>静けさを。</h2>
+        <p class="lead">
+          古着の魅力は、珍しさではなく「時間」にあると考えています。
+          何度も洗われてやわらかくなった生地、角の取れた色、
+          前の持ち主が繕った跡。新品には出せないその静けさこそが、
+          わたしたちが仕入れの基準にしているものです。
+        </p>
+        <p class="lead">
+          だから、目を引くプリントや強い色はほとんど扱いません。
+          代わりに、黒、生成り、チャコール、オリーブ。
+          何を合わせても邪魔をせず、十年後のクローゼットにも残る一着を並べています。
+        </p>
+        <p style="margin-top:32px"><a class="link-more" href="about.html">お店のことを読む →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURED ============ -->
+  <section class="section section--warm">
+    <div class="wrap">
+      <div class="section__head">
+        <div>
+          <p class="eyebrow">New Arrivals</p>
+          <h2 class="h-section">今週入荷した一着</h2>
+        </div>
+        <a class="link-more" href="shop.html">すべての商品 →</a>
+      </div>
+      <div class="grid" id="featured"></div>
+    </div>
+  </section>
+
+  <!-- ============ CATEGORY ============ -->
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="section__head">
+        <div>
+          <p class="eyebrow">Category</p>
+          <h2 class="h-section">カテゴリーから探す</h2>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="cats">
+        <a class="cat reveal" href="shop.html?cat=outer">
+          <img src="assets/img/cat-outer.svg" alt="" width="900" height="1200" loading="lazy">
+          <span class="cat__label"><b>Outerwear</b><span>アウター</span></span>
+        </a>
+        <a class="cat reveal" data-delay="1" href="shop.html?cat=knit">
+          <img src="assets/img/cat-knit.svg" alt="" width="900" height="1200" loading="lazy">
+          <span class="cat__label"><b>Knitwear</b><span>ニット</span></span>
+        </a>
+        <a class="cat reveal" data-delay="2" href="shop.html?cat=accessory">
+          <img src="assets/img/cat-accessory.svg" alt="" width="900" height="1200" loading="lazy">
+          <span class="cat__label"><b>Accessories</b><span>小物</span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW TO BUY ============ -->
+  <section class="section section--ink">
+    <div class="wrap">
+      <div class="section__head">
+        <div>
+          <p class="eyebrow">How to Buy</p>
+          <h2 class="h-section">ご購入の流れ</h2>
+        </div>
+        <p class="lead" style="max-width:26em">
+          お会計とお届けはメルカリ上で行っています。はじめての方でも、4つの手順で完結します。
+        </p>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <h3>気になる一着を選ぶ</h3>
+          <p>サイズ・実寸・状態は各商品ページに記載しています。迷ったらお気に入りに。</p>
+        </div>
+        <div class="step reveal" data-delay="1">
+          <h3>メルカリの出品ページへ</h3>
+          <p>「メルカリで購入する」から、同じ商品の出品ページへ移動します。</p>
+        </div>
+        <div class="step reveal" data-delay="2">
+          <h3>購入・お支払い</h3>
+          <p>メルカリの決済をそのままご利用いただけます。質問はコメント欄からどうぞ。</p>
+        </div>
+        <div class="step reveal" data-delay="3">
+          <h3>発送</h3>
+          <p>ご入金確認後1〜3日以内に、丁寧に包んで東京より発送します。</p>
+        </div>
+      </div>
+      <p style="margin-top:44px"><a class="btn" style="background:var(--paper);border-color:var(--paper);color:var(--ink)" href="guide.html">ご利用ガイドを見る</a></p>
+    </div>
+  </section>
+
+  <!-- ============ JOURNAL ============ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section__head">
+        <div>
+          <p class="eyebrow">Journal</p>
+          <h2 class="h-section">古着との、静かな付き合い方</h2>
+        </div>
+      </div>
+      <div class="notes">
+        <article class="note reveal">
+          <p class="note__date">2026.09.02</p>
+          <h3>ウールを長く着るための、<br>年に一度の手入れ</h3>
+          <p>しまう前のブラッシングと、風を通す場所の選び方について。虫にとって居心地の悪いクローゼットの作り方。</p>
+        </article>
+        <article class="note reveal" data-delay="1">
+          <p class="note__date">2026.08.18</p>
+          <h3>「B」の判定基準について</h3>
+          <p>コンディション表記は店ごとに違います。わたしたちがどこを見て、何を基準に判定しているかを書きました。</p>
+        </article>
+        <article class="note reveal" data-delay="2">
+          <p class="note__date">2026.07.30</p>
+          <h3>フランスの蚤の市で、<br>一日に見る服の数</h3>
+          <p>買い付けの朝は五時に始まります。何を手に取り、何を戻すのか。仕入れの現場の記録。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEWSLETTER ============ -->
+  <section class="section section--warm">
+    <div class="wrap wrap--narrow center">
+      <p class="eyebrow">Newsletter</p>
+      <h2 class="h-section">入荷のお知らせを、<br>週に一度だけ。</h2>
+      <p class="lead" style="margin-inline:auto">
+        一点物のため、気づいたときには売り切れていることがあります。
+        新しく並んだ服を、金曜の朝にまとめてお送りします。
+      </p>
+      <form class="subscribe" data-subscribe style="justify-content:center">
+        <input type="email" name="email" placeholder="mail@example.com" required aria-label="メールアドレス">
+        <button class="btn" type="submit">登録する</button>
+      </form>
+      <p class="form-note">配信は週1回、解除はいつでも可能です。</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <div>
+        <a class="brand" href="index.html">WANKO<small>Vintage Clothing</small></a>
+        <p style="margin-top:20px;font-size:13px;max-width:22em">
+          選び抜いた一着を、静かに長く。<br>ヨーロッパ・アメリカ買い付けの古着店です。
+        </p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="shop.html">すべての商品</a></li>
+          <li><a href="shop.html?cat=outer">アウター</a></li>
+          <li><a href="shop.html?cat=knit">ニット</a></li>
+          <li><a href="shop.html?cat=accessory">小物</a></li>
+          <li><a href="shop.html?fav=1">お気に入り</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">お店について</a></li>
+          <li><a href="guide.html">ご利用ガイド</a></li>
+          <li><a href="guide.html#faq">よくあるご質問</a></li>
+          <li><a href="guide.html#law">特定商取引法に基づく表記</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a data-shop-mercari href="#" target="_blank" rel="noopener noreferrer">メルカリショップ</a></li>
+          <li><a data-shop-instagram href="#" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+          <li><a data-shop-email="text" href="#">contact@example.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year>2026</span> WANKO Vintage. All rights reserved.</span>
+      <span>Tokyo, Japan</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/products.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var featured = PRODUCTS.filter(function (p) { return p.featured; }).slice(0, 4);
+    WK.renderCards(document.getElementById("featured"), featured);
+  });
+</script>
+</body>
+</html>
