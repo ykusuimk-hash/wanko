@@ -1,0 +1,773 @@
+<title>モンクレール利益計算</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=IBM+Plex+Sans+JP:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#EEF1F5; --panel:#FFFFFF; --panel-2:#F6F8FB; --ink:#141C28; --ink-2:#4A5568; --ink-3:#7B8699;
+  --line:#D8DEE7; --accent:#2B55C9; --accent-soft:#E3EAFB; --good:#18805A; --good-soft:#E1F3EA;
+  --bad:#BE3434; --bad-soft:#FBE7E7; --warn:#A86B00; --warn-soft:#FBF0DA;
+  --radius:10px;
+  --f-display:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-body:"IBM Plex Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F141C; --panel:#171E29; --panel-2:#1D2531; --ink:#E7ECF3; --ink-2:#AEB8C7; --ink-3:#7F8A9B;
+    --line:#2C3645; --accent:#7C9CF0; --accent-soft:#223050; --good:#4CC28E; --good-soft:#15352A;
+    --bad:#F07A7A; --bad-soft:#3A1E22; --warn:#E3AE4A; --warn-soft:#352A14;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F141C; --panel:#171E29; --panel-2:#1D2531; --ink:#E7ECF3; --ink-2:#AEB8C7; --ink-3:#7F8A9B;
+  --line:#2C3645; --accent:#7C9CF0; --accent-soft:#223050; --good:#4CC28E; --good-soft:#15352A;
+  --bad:#F07A7A; --bad-soft:#3A1E22; --warn:#E3AE4A; --warn-soft:#352A14;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.55;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:700}
+h1{font-size:24px;letter-spacing:.01em}
+h2{font-size:17px}
+h3{font-size:14px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-3)}
+.small{font-size:12px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+header.top p{margin:4px 0 0;color:var(--ink-2);max-width:62ch}
+.sync{font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+.dot.on{background:var(--good)}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.panel-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.grid-calc{display:grid;grid-template-columns:1fr 1fr 1.05fr;gap:16px}
+@media (max-width:980px){.grid-calc{grid-template-columns:1fr 1fr}}
+@media (max-width:660px){.grid-calc{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.col-title{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:700;font-size:14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.tag{font-family:var(--f-body);font-size:11px;font-weight:600;letter-spacing:.06em;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.tag.buy{background:var(--warn-soft);color:var(--warn)}
+.tag.sell{background:var(--good-soft);color:var(--good)}
+
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink-2);min-width:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+input,select,textarea{font:inherit;font-size:14px;color:var(--ink);background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:8px 10px;width:100%;min-width:0}
+input[type=number]{font-family:var(--f-num)}
+textarea{resize:vertical;min-height:62px;font-family:var(--f-num);font-size:13px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.yen{position:relative}
+.yen input{padding-left:24px}
+.yen::before{content:"¥";position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-family:var(--f-num);font-size:13px;pointer-events:none}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2)}
+.check input{width:auto}
+
+button,.btn{font:inherit;font-size:13px;font-weight:600;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+button:hover,.btn:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{filter:brightness(1.08);color:#fff}
+button.ghost{background:transparent}
+button.danger:hover{border-color:var(--bad);color:var(--bad)}
+.links{display:flex;flex-wrap:wrap;gap:6px}
+.links a{font-size:12px;padding:5px 10px}
+
+.stats{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-2)}
+.stats b{font-family:var(--f-num);color:var(--ink);font-weight:600}
+
+/* result */
+.result{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:12px}
+.verdict{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.big{font-family:var(--f-num);font-size:30px;font-weight:600;line-height:1.1}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+.pill{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;display:inline-block}
+.pill.go{background:var(--good-soft);color:var(--good)}
+.pill.hold{background:var(--warn-soft);color:var(--warn)}
+.pill.no{background:var(--bad-soft);color:var(--bad)}
+.kv{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:13px}
+.kv dt{color:var(--ink-2)} .kv dd{margin:0;text-align:right;font-family:var(--f-num)}
+.kv .sep{grid-column:1/-1;border-top:1px dashed var(--line);margin:4px 0}
+.kv .strong{color:var(--ink);font-weight:600}
+.maxbid{border:1px solid var(--accent);background:var(--accent-soft);border-radius:8px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.maxbid .label{font-size:12px;color:var(--ink-2)}
+.maxbid .v{font-family:var(--f-num);font-size:20px;font-weight:600;color:var(--accent)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--ink-3);background:var(--panel-2);text-align:right}
+th:first-child,td:first-child{text-align:left}
+td.l,th.l{text-align:left}
+tr:last-child td{border-bottom:0}
+tr.best td{background:var(--good-soft)}
+td .num,td.num{font-family:var(--f-num)}
+.crown{font-size:11px;color:var(--good);font-weight:600;margin-left:6px}
+
+/* ledger */
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sum{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel-2)}
+.sum .k{font-size:11px;color:var(--ink-3);letter-spacing:.04em}
+.sum .v{font-family:var(--f-num);font-size:19px;font-weight:600}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:4px 11px;border-radius:99px;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.status{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;display:inline-block}
+.s-検討中{background:var(--accent-soft);color:var(--accent)}
+.s-落札済{background:var(--warn-soft);color:var(--warn)}
+.s-出品中{background:var(--warn-soft);color:var(--warn)}
+.s-売却済{background:var(--good-soft);color:var(--good)}
+.s-見送り{background:var(--panel-2);color:var(--ink-3);border:1px solid var(--line)}
+td .name{font-weight:600;color:var(--ink)}
+td .sub{font-size:11px;color:var(--ink-3)}
+.row-actions{display:flex;gap:4px;justify-content:flex-end}
+.row-actions button{padding:4px 8px;font-size:12px}
+.empty{padding:28px;text-align:center;color:var(--ink-3)}
+details.settings summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
+details.settings[open] summary{margin-bottom:12px}
+.set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.set-box{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--panel-2)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:9px 16px;border-radius:8px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.2);z-index:10}
+.note{font-size:12px;color:var(--ink-3);margin:0}
+.editing-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;background:var(--accent-soft);color:var(--accent);border-radius:7px;padding:7px 12px;font-size:12px;font-weight:600}
+.confirm{display:inline-flex;gap:4px;align-items:center;font-size:12px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>モンクレール利益計算</h1>
+      <p>業者オークションの落札額と、メルカリなどフリマの売り切れ相場を並べて、手数料・送料・消費税を引いた利益と「いくらまで入札してよいか」を出します。</p>
+    </div>
+    <div class="sync"><span class="dot" id="syncDot"></span><span id="syncText">保存先を確認中…</span></div>
+  </header>
+
+  <!-- CALCULATOR -->
+  <section class="panel" aria-labelledby="calcTitle">
+    <div class="panel-head">
+      <h2 id="calcTitle">1点ごとの比較</h2>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="ghost" id="btnClear" type="button">入力をクリア</button>
+        <button class="primary" id="btnSave" type="button">台帳に保存</button>
+      </div>
+    </div>
+    <div id="editingBar" class="editing-bar" hidden>
+      <span id="editingText">編集中</span>
+      <button class="ghost" type="button" id="btnCancelEdit" style="padding:3px 10px">編集をやめる</button>
+    </div>
+
+    <div class="grid-calc" style="margin-top:10px">
+      <!-- item + buy -->
+      <div class="col">
+        <div class="col-title"><span class="tag buy">仕入れ</span>業者オークション</div>
+        <label class="f">商品名・モデル<input id="name" type="text" placeholder="例: MAYA マヤ"></label>
+        <div class="row3">
+          <label class="f">サイズ<input id="size" type="text" placeholder="1"></label>
+          <label class="f">色<input id="color" type="text" placeholder="黒"></label>
+          <label class="f">ランク
+            <select id="rank"><option>N</option><option>S</option><option selected>A</option><option>AB</option><option>B</option><option>C</option></select>
+          </label>
+        </div>
+        <div class="row2">
+          <label class="f">オークション
+            <select id="auction"></select>
+          </label>
+          <label class="f">管理番号・ロット<input id="lot" type="text" placeholder="任意"></label>
+        </div>
+        <label class="f">落札額（税抜）<span class="yen"><input id="bid" type="number" inputmode="numeric" min="0" step="1000"></span></label>
+        <div class="row2">
+          <label class="f">仕入れ送料<span class="yen"><input id="inShip" type="number" inputmode="numeric" min="0" step="100"></span></label>
+          <label class="f">クリーニング等<span class="yen"><input id="other" type="number" inputmode="numeric" min="0" step="100"></span></label>
+        </div>
+        <p class="note" id="auctionNote"></p>
+      </div>
+
+      <!-- market -->
+      <div class="col">
+        <div class="col-title"><span class="tag sell">販売</span>フリマ相場</div>
+        <label class="f">売り切れ価格（スペース・改行・カンマ区切りで複数貼り付け）
+          <textarea id="soldList" placeholder="98000 105000 89000 112000"></textarea>
+        </label>
+        <div class="stats" id="soldStats"></div>
+        <div class="links" id="searchLinks"></div>
+        <div class="row2">
+          <label class="f">想定販売価格<span class="yen"><input id="sale" type="number" inputmode="numeric" min="0" step="1000"></span></label>
+          <label class="f">販売先
+            <select id="platform"></select>
+          </label>
+        </div>
+        <div class="row2">
+          <label class="f">基準にする相場
+            <select id="basis"><option value="median">中央値</option><option value="avg">平均</option><option value="min">最安値</option><option value="manual">手入力</option></select>
+          </label>
+          <label class="f">相場から値引き<span style="position:relative"><input id="discount" type="number" inputmode="numeric" min="0" max="50" step="1"><span class="muted small" style="position:absolute;right:10px;top:50%;transform:translateY(-50%)">%</span></span></label>
+        </div>
+        <label class="f">メモ<input id="memo" type="text" placeholder="状態・付属品など"></label>
+      </div>
+
+      <!-- result -->
+      <div class="col">
+        <div class="col-title"><span class="tag">結果</span><span id="resPlatform">メルカリで売った場合</span></div>
+        <div class="result">
+          <div class="verdict">
+            <div>
+              <div class="small muted">利益（1点）</div>
+              <div class="big" id="rProfit">¥0</div>
+            </div>
+            <span class="pill" id="rVerdict">—</span>
+          </div>
+          <dl class="kv">
+            <dt>販売価格</dt><dd id="rSale">—</dd>
+            <dt>販売手数料</dt><dd id="rFee">—</dd>
+            <dt>発送送料</dt><dd id="rOutShip">—</dd>
+            <dt class="strong">手取り</dt><dd class="strong" id="rNet">—</dd>
+            <div class="sep"></div>
+            <dt>落札額</dt><dd id="rBid">—</dd>
+            <dt>落札手数料</dt><dd id="rBuyFee">—</dd>
+            <dt>消費税（仕入れ）</dt><dd id="rBuyTax">—</dd>
+            <dt>送料・その他</dt><dd id="rCostOther">—</dd>
+            <dt class="strong">仕入れ総額</dt><dd class="strong" id="rCost">—</dd>
+            <div class="sep" id="vatSep" hidden></div>
+            <dt id="vatDt" hidden>消費税納付（概算）</dt><dd id="rVat" hidden>—</dd>
+            <div class="sep"></div>
+            <dt>利益率（対販売価格）</dt><dd id="rMargin">—</dd>
+            <dt>ROI（対仕入れ総額）</dt><dd id="rRoi">—</dd>
+          </dl>
+          <div class="maxbid">
+            <div>
+              <div class="label">上限入札額（税抜）</div>
+              <div class="small muted" id="rTargetText">目標: 利益率15%以上 かつ 利益¥10,000以上</div>
+            </div>
+            <div class="v" id="rMaxBid">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin:20px 0 8px">販売先ごとの比較</h3>
+    <div class="tbl-wrap">
+      <table id="cmpTable">
+        <thead><tr><th class="l">販売先</th><th>手数料率</th><th>手数料</th><th>送料</th><th>手取り</th><th>利益</th><th>利益率</th><th>上限入札額</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:8px">同じ販売価格で売れた場合の比較です。販売先によって相場自体が違うときは、販売先を切り替えてそれぞれの相場を入れてください。</p>
+  </section>
+
+  <!-- LEDGER -->
+  <section class="panel" aria-labelledby="ledgerTitle">
+    <div class="panel-head">
+      <h2 id="ledgerTitle">仕入れ台帳</h2>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button type="button" id="btnCsv">CSVを書き出す</button>
+      </div>
+    </div>
+    <div class="summary" id="summary"></div>
+    <div class="panel-head" style="margin:14px 0 10px">
+      <div class="filters" id="filters" role="group" aria-label="ステータスで絞り込み"></div>
+      <input id="search" type="search" placeholder="商品名で検索" style="max-width:220px">
+    </div>
+    <div class="tbl-wrap">
+      <table id="ledger">
+        <thead><tr>
+          <th class="l">商品</th><th class="l">ステータス</th><th>落札額</th><th>仕入れ総額</th><th>相場</th><th class="l">販売先</th><th>見込み利益</th><th>実売価格</th><th>実績利益</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <textarea id="csvOut" hidden readonly style="margin-top:10px;min-height:120px"></textarea>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="panel">
+    <details class="settings" id="settingsBox">
+      <summary>手数料・目標の設定</summary>
+      <div class="set-grid">
+        <div class="set-box">
+          <h3>目標（上限入札額の計算に使用）</h3>
+          <label class="f">最低利益率（対販売価格 %）<input id="sTargetRate" type="number" min="0" max="80" step="1"></label>
+          <label class="f">最低利益額<span class="yen"><input id="sTargetAmt" type="number" min="0" step="1000"></span></label>
+          <label class="check"><input id="sVat" type="checkbox">課税事業者として計算（売上の消費税から仕入れ分を差し引いた納付額を概算）</label>
+          <label class="check"><input id="sBuyTax" type="checkbox">落札額と落札手数料に消費税10%をかける</label>
+        </div>
+        <div class="set-box" id="setAuctions"><h3>業者オークション</h3></div>
+        <div class="set-box" id="setPlatforms"><h3>販売先</h3></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center">
+        <button type="button" id="btnSaveSettings" class="primary">設定を保存</button>
+        <button type="button" id="btnResetSettings" class="ghost">初期値に戻す</button>
+        <span class="note">初期値は目安です。ご利用中のオークション規約・各フリマの最新手数料に合わせてください。</span>
+      </div>
+    </details>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+const $ = id => document.getElementById(id);
+const yen = n => (n<0?"−¥":"¥") + Math.round(Math.abs(n)).toLocaleString("ja-JP");
+const pct = n => isFinite(n) ? (n*100).toFixed(1)+"%" : "—";
+const num = v => { const n = parseFloat(String(v).replace(/[,，¥円\s]/g,"")); return isFinite(n) ? n : 0; };
+
+const DEFAULTS = {
+  targetRate: 15, targetAmt: 10000, vat: false, buyTax: true,
+  auctions: [
+    {id:"ecoauc", name:"エコオク", feeRate:3, fixed:0, ship:1000},
+    {id:"sba", name:"スターバイヤーズ", feeRate:3, fixed:0, ship:1000},
+    {id:"bw", name:"BWオークション", feeRate:3, fixed:0, ship:1000},
+    {id:"other", name:"その他", feeRate:3, fixed:0, ship:1000}
+  ],
+  platforms: [
+    {id:"mercari", name:"メルカリ", feeRate:10, ship:1200},
+    {id:"rakuma", name:"ラクマ", feeRate:10, ship:1200},
+    {id:"yfleamarket", name:"Yahoo!フリマ", feeRate:5, ship:1200},
+    {id:"yauc", name:"ヤフオク", feeRate:10, ship:1200}
+  ]
+};
+const STATUSES = ["検討中","落札済","出品中","売却済","見送り"];
+let settings = structuredClone(DEFAULTS);
+let items = [];           // [{id, ...}]
+let editingId = null;
+let filter = "すべて";
+let store = null;          // {kind:"db"|"local"|"none", db}
+
+/* ---------- storage ---------- */
+const LS_ITEMS = "mpc.items.v1", LS_SET = "mpc.settings.v1", LS_DRAFT = "mpc.draft.v1";
+function lsGet(k){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } }
+
+function setSync(kind){
+  const dot = $("syncDot"), t = $("syncText");
+  dot.classList.toggle("on", kind==="db");
+  t.textContent = kind==="db" ? "クラウドに保存（どの端末からでも同じ台帳）"
+               : kind==="local" ? "このブラウザに保存"
+               : "保存できません（閲覧のみ）";
+}
+
+async function initStore(){
+  // local fallback first so the page works immediately
+  const localSet = lsGet(LS_SET); if(localSet) settings = mergeSettings(localSet);
+  const localItems = lsGet(LS_ITEMS); if(Array.isArray(localItems)) items = localItems;
+  store = {kind: lsSet("mpc.probe", 1) ? "local" : "none"};
+  setSync(store.kind);
+  renderSettings(); fillSelects(true); renderAll();
+
+  if(!window.claude || typeof window.claude.use !== "function") return;
+  let db = null;
+  try{ db = await window.claude.use("db"); }catch(e){ db = null; }
+  if(!db) return;
+  store = {kind:"db", db};
+  setSync("db");
+  db.doc("settings/fees").onSnapshot(snap => {
+    if(snap.exists){ settings = mergeSettings(snap.data()); renderSettings(); fillSelects(true); recalc(); renderLedger(); }
+  }, () => {});
+  db.collection("items").onSnapshot(snap => {
+    items = snap.docs.map(d => Object.assign({id:d.id}, d.data()));
+    renderLedger();
+  }, e => { toast("台帳の読み込みに失敗しました: " + e.code); });
+}
+function mergeSettings(s){
+  const out = structuredClone(DEFAULTS);
+  if(!s) return out;
+  ["targetRate","targetAmt","vat","buyTax"].forEach(k => { if(s[k]!==undefined) out[k]=s[k]; });
+  if(Array.isArray(s.auctions) && s.auctions.length) out.auctions = s.auctions;
+  if(Array.isArray(s.platforms) && s.platforms.length) out.platforms = s.platforms;
+  return out;
+}
+async function saveItem(data){
+  const now = new Date().toISOString();
+  if(store.kind==="db"){
+    try{
+      if(editingId){ await store.db.doc("items/"+editingId).set(Object.assign({}, data, {updatedAt:now})); }
+      else { await store.db.collection("items").add(Object.assign({}, data, {createdAt:now, updatedAt:now})); }
+      return true;
+    }catch(e){
+      toast(e.code==="quota_exceeded" ? "台帳が上限に達しました。不要な行を削除してください。" : "保存できませんでした（"+e.code+"）");
+      return false;
+    }
+  }
+  if(store.kind==="local"){
+    if(editingId){ items = items.map(it => it.id===editingId ? Object.assign({id:editingId, createdAt:it.createdAt}, data, {updatedAt:now}) : it); }
+    else { items.push(Object.assign({id:"i"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}, data, {createdAt:now, updatedAt:now})); }
+    lsSet(LS_ITEMS, items); renderLedger(); return true;
+  }
+  toast("この表示では保存できません"); return false;
+}
+async function patchItem(id, patch){
+  const it = items.find(x=>x.id===id); if(!it) return;
+  const next = Object.assign({}, it, patch, {updatedAt:new Date().toISOString()}); delete next.id;
+  if(store.kind==="db"){ try{ await store.db.doc("items/"+id).set(next); }catch(e){ toast("更新できませんでした（"+e.code+"）"); } }
+  else if(store.kind==="local"){ Object.assign(it, patch); lsSet(LS_ITEMS, items); renderLedger(); }
+}
+async function deleteItem(id){
+  if(store.kind==="db"){ try{ await store.db.doc("items/"+id).delete(); }catch(e){ toast("削除できませんでした（"+e.code+"）"); } }
+  else if(store.kind==="local"){ items = items.filter(x=>x.id!==id); lsSet(LS_ITEMS, items); renderLedger(); }
+}
+async function persistSettings(){
+  if(store.kind==="db"){ try{ await store.db.doc("settings/fees").set(settings); }catch(e){ toast("設定を保存できませんでした（"+e.code+"）"); return; } }
+  lsSet(LS_SET, settings);
+  toast("設定を保存しました");
+}
+
+/* ---------- calculation ---------- */
+function findAuction(id){ return settings.auctions.find(a=>a.id===id) || settings.auctions[0]; }
+function findPlatform(id){ return settings.platforms.find(p=>p.id===id) || settings.platforms[0]; }
+
+// Profit for a given bid / sale / platform
+function calc({bid, sale, auctionId, platformId, inShip, other, outShip}){
+  const a = findAuction(auctionId), p = findPlatform(platformId);
+  const t = settings.buyTax ? 0.10 : 0;
+  const buyFee = bid * a.feeRate/100 + (bid>0 ? a.fixed : 0);
+  const buyTax = (bid + buyFee) * t;
+  const costOther = inShip + other;
+  const cost = bid + buyFee + buyTax + costOther;
+  const fee = Math.round(sale * p.feeRate/100);
+  const ship = outShip;
+  const net = sale - fee - ship;
+  let vat = 0;
+  if(settings.vat){
+    // 売上にかかる消費税 − 仕入れ・手数料・送料で払った消費税（すべて税込10%と仮定）
+    vat = sale/11 - buyTax - fee/11 - ship/11 - costOther/11;
+  }
+  const profit = net - cost - vat;
+  return {a, p, buyFee, buyTax, costOther, cost, fee, ship, net, vat, profit,
+          margin: sale>0 ? profit/sale : NaN, roi: cost>0 ? profit/cost : NaN};
+}
+// Highest bid that still meets both targets
+function maxBid(args){
+  const {sale} = args;
+  if(sale<=0) return NaN;
+  const need = Math.max(settings.targetAmt, sale*settings.targetRate/100);
+  const at = b => calc(Object.assign({}, args, {bid:b})).profit;
+  const p0 = at(0), p1 = at(10000);
+  const slope = (p1 - p0)/10000;            // profit is linear in bid
+  if(slope>=0) return NaN;
+  const b = (need - p0)/slope;
+  return b<=0 ? 0 : Math.floor(b/100)*100;
+}
+
+function median(a){ const s=[...a].sort((x,y)=>x-y); const m=s.length>>1; return s.length%2 ? s[m] : (s[m-1]+s[m])/2; }
+function parseSold(txt){
+  return String(txt||"").split(/[\s,，、\/]+/).map(x=>num(x)).filter(n=>n>=1000);
+}
+
+/* ---------- form ---------- */
+const F = ["name","size","color","rank","auction","lot","bid","inShip","other","soldList","sale","platform","basis","discount","memo"];
+function readForm(){
+  const o = {}; F.forEach(k => o[k] = $(k).value);
+  return o;
+}
+function writeForm(o){ F.forEach(k => { if(o[k]!==undefined && o[k]!==null) $(k).value = o[k]; }); }
+function formArgs(){
+  return {
+    bid: num($("bid").value), sale: num($("sale").value),
+    auctionId: $("auction").value, platformId: $("platform").value,
+    inShip: num($("inShip").value), other: num($("other").value),
+    outShip: findPlatform($("platform").value).ship
+  };
+}
+function fillSelects(keep){
+  const aVal = $("auction").value, pVal = $("platform").value;
+  $("auction").innerHTML = settings.auctions.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join("");
+  $("platform").innerHTML = settings.platforms.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("");
+  if(keep){ if(aVal) $("auction").value = aVal; if(pVal) $("platform").value = pVal; }
+}
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function applyBasis(){
+  const sold = parseSold($("soldList").value);
+  const basis = $("basis").value;
+  if(basis==="manual" || !sold.length) return;
+  let v = basis==="avg" ? sold.reduce((s,x)=>s+x,0)/sold.length : basis==="min" ? Math.min(...sold) : median(sold);
+  v = v * (1 - num($("discount").value)/100);
+  $("sale").value = Math.round(v/100)*100;
+}
+function renderSold(){
+  const sold = parseSold($("soldList").value);
+  if(!sold.length){ $("soldStats").innerHTML = `<span>売り切れ価格を入れると中央値・平均・最安・最高が出ます。</span>`; return; }
+  const avg = sold.reduce((s,x)=>s+x,0)/sold.length;
+  $("soldStats").innerHTML =
+    `<span>件数 <b>${sold.length}</b></span><span>中央値 <b>${yen(median(sold))}</b></span>`+
+    `<span>平均 <b>${yen(avg)}</b></span><span>最安 <b>${yen(Math.min(...sold))}</b></span><span>最高 <b>${yen(Math.max(...sold))}</b></span>`;
+}
+function renderLinks(){
+  const q = ["モンクレール", $("name").value.trim(), $("size").value.trim() ? "サイズ"+$("size").value.trim() : ""].filter(Boolean).join(" ");
+  const e = encodeURIComponent(q);
+  const links = [
+    ["メルカリ 売り切れ", `https://jp.mercari.com/search?keyword=${e}&status=sold_out`],
+    ["ラクマ 売り切れ", `https://fril.jp/s?query=${e}&transaction=soldout`],
+    ["Yahoo!フリマ", `https://paypayfleamarket.yahoo.co.jp/search/${e}?open=0`],
+    ["ヤフオク 落札相場", `https://auctions.yahoo.co.jp/closedsearch/closedsearch?p=${e}`]
+  ];
+  $("searchLinks").innerHTML = links.map(([t,u])=>`<a class="btn" href="${u}" target="_blank" rel="noopener">${t} ↗</a>`).join("");
+}
+
+function verdict(r, mb, bid){
+  if(!(num($("sale").value)>0)) return ["hold","相場を入力"];
+  if(bid<=0) return ["hold","落札額を入力"];
+  if(r.profit<0) return ["no","赤字"];
+  if(isFinite(mb) && bid<=mb) return ["go","仕入れOK"];
+  return ["hold","目標未達"];
+}
+
+function recalc(){
+  const args = formArgs();
+  const r = calc(args), mb = maxBid(args);
+  const p = r.p;
+  $("resPlatform").textContent = p.name + "で売った場合";
+  const pEl = $("rProfit"); pEl.textContent = yen(r.profit); pEl.className = "big " + (r.profit>=0 ? "pos":"neg");
+  $("rSale").textContent = yen(args.sale);
+  $("rFee").textContent = "−"+yen(r.fee)+` (${p.feeRate}%)`;
+  $("rOutShip").textContent = "−"+yen(r.ship);
+  $("rNet").textContent = yen(r.net);
+  $("rBid").textContent = yen(args.bid);
+  $("rBuyFee").textContent = yen(r.buyFee)+` (${r.a.feeRate}%)`;
+  $("rBuyTax").textContent = yen(r.buyTax);
+  $("rCostOther").textContent = yen(r.costOther);
+  $("rCost").textContent = yen(r.cost);
+  ["vatSep","vatDt","rVat"].forEach(id => $(id).hidden = !settings.vat);
+  $("rVat").textContent = "−"+yen(r.vat);
+  $("rMargin").textContent = pct(r.margin);
+  $("rRoi").textContent = pct(r.roi);
+  $("rMaxBid").textContent = isFinite(mb) ? yen(mb) : "—";
+  $("rTargetText").textContent = `目標: 利益率${settings.targetRate}%以上 かつ 利益${yen(settings.targetAmt)}以上`;
+  const [cls, txt] = verdict(r, mb, args.bid);
+  const v = $("rVerdict"); v.className = "pill " + cls; v.textContent = txt;
+  $("auctionNote").textContent = `${r.a.name}: 落札手数料 ${r.a.feeRate}%${r.a.fixed?` + ${yen(r.a.fixed)}/点`:""}` + (settings.buyTax ? "・消費税10%込みで計算" : "・消費税なしで計算");
+
+  // comparison across platforms
+  const rows = settings.platforms.map(pl => {
+    const a2 = Object.assign({}, args, {platformId:pl.id, outShip:pl.ship});
+    const rr = calc(a2); return {pl, rr, mb: maxBid(a2)};
+  });
+  const best = rows.reduce((b,x)=> (b===null || x.rr.profit>b.rr.profit) ? x : b, null);
+  $("cmpTable").querySelector("tbody").innerHTML = rows.map(x => `
+    <tr class="${x===best && args.sale>0 ? "best":""}">
+      <td>${esc(x.pl.name)}${x===best && args.sale>0 ? '<span class="crown">最も利益が大きい</span>':""}</td>
+      <td class="num">${x.pl.feeRate}%</td>
+      <td class="num">${yen(x.rr.fee)}</td>
+      <td class="num">${yen(x.rr.ship)}</td>
+      <td class="num">${yen(x.rr.net)}</td>
+      <td class="num ${x.rr.profit>=0?"pos":"neg"}">${yen(x.rr.profit)}</td>
+      <td class="num">${pct(x.rr.margin)}</td>
+      <td class="num">${isFinite(x.mb)?yen(x.mb):"—"}</td>
+    </tr>`).join("");
+  try{ sessionStorage.setItem(LS_DRAFT, JSON.stringify(readForm())); }catch(e){}
+}
+
+function onInput(e){
+  const id = e.target.id;
+  if(id==="sale"){ $("basis").value = "manual"; }
+  if(["soldList","basis","discount"].includes(id)){ renderSold(); applyBasis(); }
+  if(["name","size"].includes(id)) renderLinks();
+  recalc();
+}
+
+/* ---------- ledger ---------- */
+function itemCalc(it){
+  const args = {bid:num(it.bid), sale:num(it.sale), auctionId:it.auction, platformId:it.platform,
+    inShip:num(it.inShip), other:num(it.other), outShip:findPlatform(it.platform).ship};
+  const r = calc(args);
+  let actual = null;
+  if(it.status==="売却済" && num(it.actualSale)>0){
+    const pid = it.actualPlatform || it.platform;
+    actual = calc(Object.assign({}, args, {sale:num(it.actualSale), platformId:pid, outShip:findPlatform(pid).ship}));
+  }
+  return {r, actual};
+}
+function renderLedger(){
+  const counts = {"すべて":items.length}; STATUSES.forEach(s=>counts[s]=0);
+  items.forEach(it => counts[it.status||"検討中"] = (counts[it.status||"検討中"]||0)+1);
+  $("filters").innerHTML = ["すべて", ...STATUSES].map(s =>
+    `<button type="button" class="chip" data-f="${s}" aria-pressed="${filter===s}">${s} <span class="num">${counts[s]||0}</span></button>`).join("");
+
+  // summary
+  let inv=0, exp=0, real=0, realCost=0, soldN=0;
+  items.forEach(it => {
+    const {r, actual} = itemCalc(it);
+    if(["落札済","出品中"].includes(it.status)){ inv += r.cost; exp += r.profit; }
+    if(actual){ real += actual.profit; realCost += actual.cost; soldN++; }
+  });
+  $("summary").innerHTML = `
+    <div class="sum"><div class="k">在庫の仕入れ総額</div><div class="v">${yen(inv)}</div></div>
+    <div class="sum"><div class="k">在庫の見込み利益</div><div class="v ${exp>=0?"pos":"neg"}">${yen(exp)}</div></div>
+    <div class="sum"><div class="k">売却済みの実績利益（${soldN}点）</div><div class="v ${real>=0?"pos":"neg"}">${yen(real)}</div></div>
+    <div class="sum"><div class="k">実績ROI</div><div class="v">${realCost>0?pct(real/realCost):"—"}</div></div>`;
+
+  const q = $("search").value.trim().toLowerCase();
+  const rows = items
+    .filter(it => filter==="すべて" || (it.status||"検討中")===filter)
+    .filter(it => !q || [it.name,it.memo,it.lot,it.color].join(" ").toLowerCase().includes(q))
+    .sort((a,b)=> String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")));
+  const tb = $("ledger").querySelector("tbody");
+  if(!rows.length){
+    tb.innerHTML = `<tr><td colspan="10" class="empty">${items.length ? "条件に合う商品がありません。" : "まだ登録がありません。上の計算で「台帳に保存」を押すとここに並びます。"}</td></tr>`;
+    return;
+  }
+  tb.innerHTML = rows.map(it => {
+    const {r, actual} = itemCalc(it);
+    const st = it.status || "検討中";
+    const sold = parseSold(it.soldList);
+    const pl = findPlatform(it.platform);
+    const sub = [it.size && "サイズ"+it.size, it.color, it.rank && "ランク"+it.rank, findAuction(it.auction).name].filter(Boolean).join("・");
+    return `<tr data-id="${esc(it.id)}">
+      <td><div class="name">${esc(it.name||"(名称なし)")}</div><div class="sub">${esc(sub)}</div></td>
+      <td class="l"><select data-act="status" aria-label="ステータス" style="padding:4px 6px;font-size:12px;width:auto">${STATUSES.map(s=>`<option ${s===st?"selected":""}>${s}</option>`).join("")}</select></td>
+      <td class="num">${yen(num(it.bid))}</td>
+      <td class="num">${yen(r.cost)}</td>
+      <td class="num">${num(it.sale)?yen(num(it.sale)):"—"}${sold.length?`<div class="sub">${sold.length}件の中央値 ${yen(median(sold))}</div>`:""}</td>
+      <td class="l">${esc(pl.name)}</td>
+      <td class="num ${r.profit>=0?"pos":"neg"}">${yen(r.profit)}<div class="sub">${pct(r.roi)} ROI</div></td>
+      <td class="num">${st==="売却済" ? `<span class="yen" style="display:inline-block;width:110px"><input data-act="actual" type="number" min="0" step="1000" value="${num(it.actualSale)||""}" aria-label="実売価格" style="padding:4px 6px 4px 22px;font-size:12px"></span>` : '<span class="muted">—</span>'}</td>
+      <td class="num ${actual ? (actual.profit>=0?"pos":"neg") : ""}">${actual ? yen(actual.profit) : '<span class="muted">—</span>'}</td>
+      <td><div class="row-actions">
+        <button type="button" data-act="edit">開く</button>
+        <span data-confirm><button type="button" class="danger" data-act="del">削除</button></span>
+      </div></td>
+    </tr>`;
+  }).join("");
+}
+function onLedgerClick(e){
+  const btn = e.target.closest("button"); if(!btn) return;
+  if(btn.classList.contains("chip")){ filter = btn.dataset.f; renderLedger(); return; }
+  const tr = btn.closest("tr[data-id]"); if(!tr) return;
+  const id = tr.dataset.id, act = btn.dataset.act;
+  if(act==="edit") loadItem(id);
+  if(act==="del"){
+    btn.parentElement.innerHTML = `<span class="confirm">削除しますか？<button type="button" class="danger" data-act="delyes">削除</button><button type="button" data-act="delno">戻す</button></span>`;
+  }
+  if(act==="delyes"){ deleteItem(id).then(()=>toast("削除しました")); if(editingId===id) stopEdit(); }
+  if(act==="delno") renderLedger();
+}
+let actualTimer = null;
+function onLedgerChange(e){
+  const tr = e.target.closest("tr[data-id]"); if(!tr) return;
+  const id = tr.dataset.id;
+  if(e.target.dataset.act==="status") patchItem(id, {status:e.target.value});
+  if(e.target.dataset.act==="actual"){
+    clearTimeout(actualTimer);
+    const v = num(e.target.value);
+    actualTimer = setTimeout(()=>patchItem(id, {actualSale:v}), 400);
+  }
+}
+function loadItem(id){
+  const it = items.find(x=>x.id===id); if(!it) return;
+  writeForm(it);
+  editingId = id;
+  $("editingBar").hidden = false;
+  $("editingText").textContent = `「${it.name||"(名称なし)"}」を編集中。保存すると上書きします。`;
+  $("btnSave").textContent = "上書き保存";
+  renderSold(); renderLinks(); recalc();
+  $("calcTitle").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+}
+function stopEdit(){
+  editingId = null; $("editingBar").hidden = true; $("btnSave").textContent = "台帳に保存";
+}
+
+/* ---------- CSV ---------- */
+function buildCsv(){
+  const head = ["商品名","サイズ","色","ランク","オークション","ロット","ステータス","落札額","仕入れ総額","相場件数","相場中央値","想定販売価格","販売先","見込み利益","見込みROI","実売価格","実績利益","メモ","登録日"];
+  const lines = [head];
+  items.forEach(it => {
+    const {r, actual} = itemCalc(it); const sold = parseSold(it.soldList);
+    lines.push([it.name,it.size,it.color,it.rank,findAuction(it.auction).name,it.lot,it.status||"検討中",
+      num(it.bid),Math.round(r.cost),sold.length,sold.length?median(sold):"",num(it.sale),findPlatform(it.platform).name,
+      Math.round(r.profit),isFinite(r.roi)?(r.roi*100).toFixed(1)+"%":"",num(it.actualSale)||"",actual?Math.round(actual.profit):"",
+      it.memo,(it.createdAt||"").slice(0,10)]);
+  });
+  return "﻿" + lines.map(row => row.map(v => { const s=String(v==null?"":v); return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }).join(",")).join("\n");
+}
+async function exportCsv(){
+  const csv = buildCsv();
+  const name = `moncler-ledger-${new Date().toISOString().slice(0,10)}.csv`;
+  let dl = null;
+  try{ dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null; }catch(e){ dl = null; }
+  if(dl){
+    try{ const res = await dl.save({filename:name, data:csv}); if(res.status==="saved") toast("CSVを保存しました"); return; }
+    catch(e){ if(e.code==="declined") return; }
+  }
+  const ta = $("csvOut"); ta.hidden = false; ta.value = csv.slice(1); ta.focus(); ta.select();
+  try{ await navigator.clipboard.writeText(csv.slice(1)); toast("CSVをコピーしました（スプレッドシートに貼り付けできます）"); }
+  catch(e){ toast("CSVを表示しました。選択してコピーしてください"); }
+}
+
+/* ---------- settings UI ---------- */
+function renderSettings(){
+  $("sTargetRate").value = settings.targetRate;
+  $("sTargetAmt").value = settings.targetAmt;
+  $("sVat").checked = !!settings.vat;
+  $("sBuyTax").checked = !!settings.buyTax;
+  $("setAuctions").innerHTML = `<h3>業者オークション（落札手数料）</h3>` + settings.auctions.map((a,i)=>`
+    <div class="row3">
+      <label class="f">名前<input id="sa-name-${i}" value="${esc(a.name)}"></label>
+      <label class="f">手数料%<input id="sa-rate-${i}" type="number" step="0.1" min="0" value="${a.feeRate}"></label>
+      <label class="f">仕入れ送料<input id="sa-ship-${i}" type="number" step="100" min="0" value="${a.ship}"></label>
+    </div>`).join("") + `<p class="note">仕入れ送料は、オークションを選んだときに自動で入る初期値です。</p>`;
+  $("setPlatforms").innerHTML = `<h3>販売先（販売手数料・発送送料）</h3>` + settings.platforms.map((p,i)=>`
+    <div class="row3">
+      <label class="f">名前<input id="sp-name-${i}" value="${esc(p.name)}"></label>
+      <label class="f">手数料%<input id="sp-rate-${i}" type="number" step="0.1" min="0" value="${p.feeRate}"></label>
+      <label class="f">送料<input id="sp-ship-${i}" type="number" step="50" min="0" value="${p.ship}"></label>
+    </div>`).join("");
+}
+function readSettings(){
+  settings.targetRate = num($("sTargetRate").value);
+  settings.targetAmt = num($("sTargetAmt").value);
+  settings.vat = $("sVat").checked;
+  settings.buyTax = $("sBuyTax").checked;
+  settings.auctions = settings.auctions.map((a,i)=>({id:a.id, name:$("sa-name-"+i).value||a.name, feeRate:num($("sa-rate-"+i).value), fixed:a.fixed||0, ship:num($("sa-ship-"+i).value)}));
+  settings.platforms = settings.platforms.map((p,i)=>({id:p.id, name:$("sp-name-"+i).value||p.name, feeRate:num($("sp-rate-"+i).value), ship:num($("sp-ship-"+i).value)}));
+}
+
+/* ---------- misc ---------- */
+let toastTimer = null;
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.hidden=true, 2600); }
+function renderAll(){ renderSold(); renderLinks(); recalc(); renderLedger(); }
+
+const EXAMPLE = {name:"MAYA マヤ（入力例）", size:"1", color:"黒", rank:"A", auction:"ecoauc", lot:"", bid:"72000", inShip:"1000", other:"0",
+  soldList:"98000 105000 89000 112000 99000 94000", sale:"", platform:"mercari", basis:"median", discount:"3", memo:""};
+
+function boot(){
+  let draft = null; try{ draft = JSON.parse(sessionStorage.getItem(LS_DRAFT)||"null"); }catch(e){}
+  fillSelects();
+  writeForm(draft || EXAMPLE);
+  if(!draft){ renderSold(); applyBasis(); }
+
+  document.querySelector(".grid-calc").addEventListener("input", onInput);
+  $("auction").addEventListener("change", ()=>{ $("inShip").value = findAuction($("auction").value).ship; recalc(); });
+  $("platform").addEventListener("change", recalc);
+  $("btnSave").addEventListener("click", async ()=>{
+    const data = readForm();
+    if(!data.name.trim()){ toast("商品名を入れてください"); $("name").focus(); return; }
+    const prev = editingId ? items.find(x=>x.id===editingId) : null;
+    data.status = prev ? (prev.status||"検討中") : "検討中";
+    data.actualSale = prev ? (prev.actualSale||0) : 0;
+    data.actualPlatform = prev ? (prev.actualPlatform||"") : "";
+    const ok = await saveItem(data);
+    if(ok){ toast(editingId ? "上書き保存しました" : "台帳に保存しました"); stopEdit(); }
+  });
+  $("btnCancelEdit").addEventListener("click", stopEdit);
+  $("btnClear").addEventListener("click", ()=>{
+    F.forEach(k => { const el=$(k); if(el.tagName!=="SELECT") el.value=""; });
+    $("basis").value="median"; $("discount").value="0"; $("inShip").value = findAuction($("auction").value).ship; $("other").value="0";
+    stopEdit(); renderAll();
+  });
+  $("filters").addEventListener("click", onLedgerClick);
+  $("ledger").addEventListener("click", onLedgerClick);
+  $("ledger").addEventListener("change", onLedgerChange);
+  $("search").addEventListener("input", renderLedger);
+  $("btnCsv").addEventListener("click", exportCsv);
+  $("btnSaveSettings").addEventListener("click", ()=>{ readSettings(); fillSelects(true); recalc(); renderLedger(); persistSettings(); });
+  $("btnResetSettings").addEventListener("click", ()=>{ settings = structuredClone(DEFAULTS); renderSettings(); fillSelects(true); recalc(); renderLedger(); persistSettings(); });
+  initStore();
+}
+boot();
+})();
+</script>
