@@ -54,7 +54,7 @@ button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 button.primary:hover{filter:brightness(1.08);color:#fff}
 .btns{display:flex;flex-wrap:wrap;gap:6px}
 .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-@media (max-width:760px){.steps{grid-template-columns:1fr}}
+@media (max-width:760px){.steps,#bmGrid{grid-template-columns:1fr!important}}
 .step{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-2)}
 .step b{color:var(--ink);font-family:var(--f-display)}
 .step .n{font-family:var(--f-num);font-size:11px;color:var(--accent);font-weight:600;letter-spacing:.06em}
@@ -145,6 +145,39 @@ td.detail{background:var(--panel-2);text-align:left;white-space:normal;padding:1
         <label class="f" style="margin-top:4px">商品ページのURL（リンク用）<input id="shopBase" type="text"></label>
       </div>
     </div>
+  </section>
+
+  <!-- CHROME BOOKMARKLETS -->
+  <section class="panel" aria-labelledby="bmTitle">
+    <div class="head">
+      <h2 id="bmTitle">パソコンのChromeで1クリック取得</h2>
+      <span class="small muted">ブックマークに登録して使います</span>
+    </div>
+    <p class="small" style="color:var(--ink-2);max-width:80ch">下の2つをChromeのブックマークとして登録しておくと、Antonioliの商品データ全件と、メルカリ・ヤフオクの売り切れ価格を1クリックでコピーできます。コピーした内容をこのページに貼り付けるだけです。</p>
+    <div class="steps" style="grid-template-columns:repeat(2,minmax(0,1fr))" id="bmGrid">
+      <div class="step">
+        <span class="n">BOOKMARK A</span><b>Antonioli 全件コピー</b>
+        <span>Antonioli のサイト（どのページでも可）を開いた状態でクリックします。モンクレールの商品データを全ページ分集めてコピーします。コピーしたら上の STEP 2 の欄に貼り付けて「読み込む」を押します。</span>
+        <textarea id="bmAnt" readonly aria-label="ブックマークレットA" style="min-height:54px"></textarea>
+        <button type="button" data-copy="bmAnt" style="align-self:flex-start">コードをコピー</button>
+      </div>
+      <div class="step">
+        <span class="n">BOOKMARK B</span><b>売り切れ価格コピー</b>
+        <span>商品の行を開いて「メルカリ 売り切れ」などの検索ボタンで結果を表示し、その画面でクリックします。表示中の商品の価格を集めてコピーします。行の中の各販売先の欄に貼り付けます。</span>
+        <textarea id="bmMk" readonly aria-label="ブックマークレットB" style="min-height:54px"></textarea>
+        <button type="button" data-copy="bmMk" style="align-self:flex-start">コードをコピー</button>
+      </div>
+    </div>
+    <details>
+      <summary style="font-size:13px">ブックマークへの登録方法</summary>
+      <ol class="small" style="color:var(--ink-2);margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:4px">
+        <li>上の「コードをコピー」を押します。</li>
+        <li>Chrome のブックマークバーを右クリックし「ページを追加」を選びます（バーが無いときは Ctrl+Shift+B / Mac は ⌘+Shift+B で表示）。</li>
+        <li>名前に「Antonioli全件コピー」などと入れ、URL の欄にコピーしたコードを貼り付けて保存します。</li>
+        <li>対象のページを開いた状態で、そのブックマークをクリックします。画面右下にコピー結果の枠が出ます。</li>
+      </ol>
+      <p class="note" style="margin-top:6px">価格の読み取りは各サイトの画面の作りに依存します。サイトの変更で取れなくなったときは、手で価格を貼り付けてください。自動で大量に巡回するものではなく、表示中の1ページだけを読みます。</p>
+    </details>
   </section>
 
   <!-- SETTINGS -->
@@ -257,6 +290,9 @@ const DEFAULTS = {
   platforms: PLATFORMS, shopBase:"https://antonioli.eu/ja-jp/products/"
 };
 const FEED = "https://antonioli.eu/en-us/collections/designer-moncler/products.json?limit=250&page=1";
+const BM_OVERLAY = "function __o(t,msg){var d=document.createElement('div');d.style.cssText='position:fixed;right:16px;bottom:16px;z-index:2147483647;background:#141C28;color:#fff;padding:12px;border-radius:10px;width:360px;max-width:90vw;font:13px sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';var p=document.createElement('div');p.textContent=msg;p.style.marginBottom='8px';var a=document.createElement('textarea');a.value=t;a.style.cssText='width:100%;height:90px;font:12px monospace;color:#000;background:#fff';var b=document.createElement('button');b.textContent='閉じる';b.style.cssText='margin-top:8px;padding:4px 12px';b.onclick=function(){d.remove()};d.append(p,a,b);document.body.append(d);a.focus();a.select();try{document.execCommand('copy')}catch(e){}if(navigator.clipboard)navigator.clipboard.writeText(t).catch(function(){})}";
+const BM_ANT = "javascript:(async()=>{" + BM_OVERLAY + ";try{var all=[];for(var p=1;p<=20;p++){var r=await fetch(location.origin+'/collections/designer-moncler/products.json?limit=250&page='+p);if(!r.ok)break;var j=await r.json();if(!j.products||!j.products.length)break;all=all.concat(j.products)}var slim=all.map(function(x){return{id:x.id,handle:x.handle,title:x.title,vendor:x.vendor,product_type:x.product_type,tags:x.tags,variants:(x.variants||[]).map(function(v){return{title:v.title,option1:v.option1,price:v.price,compare_at_price:v.compare_at_price,available:v.available}})}});__o(JSON.stringify({products:slim}),slim.length+'件をコピーしました。ツールのSTEP 2に貼り付けてください。')}catch(e){__o('','取得できませんでした: '+e.message+'（Antonioliのページで実行してください）')}})()";
+const BM_MK = "javascript:(()=>{" + BM_OVERLAY + ";var h=location.host,sel;if(/mercari/.test(h))sel='[data-testid=\"item-cell\"],li[data-testid]';else if(/auctions\\.yahoo/.test(h))sel='.Product,li[class*=\"Product\"]';else if(/fril\\.jp/.test(h))sel='.item-box,[class*=\"item-box\"]';else if(/paypayfleamarket/.test(h))sel='a[href*=\"/item/\"]';else sel='a[href*=\"item\"]';var cells=[].slice.call(document.querySelectorAll(sel)),out=[];cells.forEach(function(c){var t=(c.getAttribute('aria-label')||'')+' '+(c.innerText||'');var m=t.match(/[¥￥]\\s*([0-9,]{4,})/)||t.match(/([0-9,]{4,})\\s*円/);if(m){var n=parseInt(m[1].replace(/,/g,''),10);if(n>=1000)out.push(n)}});if(!out.length){__o('','価格が見つかりませんでした。検索結果の一覧ページで実行してください。');return}__o(out.join(' '),out.length+'件の価格をコピーしました。ツールの販売先の欄に貼り付けてください。')})()";
 const CUR_SIGN = {EUR:"€", USD:"$", JPY:"¥"};
 
 let S = structuredClone(DEFAULTS);
@@ -605,6 +641,13 @@ function toast(m){ const t=$("toast"); t.textContent=m; t.hidden=false; clearTim
 function findP(h){ return list().find(p=>p.h===h); }
 
 function boot(){
+  $("bmAnt").value = BM_ANT; $("bmMk").value = BM_MK;
+  $("bmGrid").addEventListener("click", async e => {
+    const b = e.target.closest("[data-copy]"); if(!b) return;
+    const ta = $(b.dataset.copy);
+    try{ await navigator.clipboard.writeText(ta.value); toast("コードをコピーしました。ブックマークのURL欄に貼り付けてください"); }
+    catch(err){ ta.focus(); ta.select(); toast("コードを選択しました。Ctrl+C でコピーしてください"); }
+  });
   $("feedUrl").value = FEED; $("feedLink").href = FEED;
   $("btnCopyUrl").addEventListener("click", async ()=>{ try{ await navigator.clipboard.writeText(FEED); toast("URLをコピーしました"); }catch(e){ $("feedUrl").select(); toast("URLを選択しました。コピーしてください"); } });
   $("btnImport").addEventListener("click", ()=>doImport(false));
